@@ -1,0 +1,54 @@
+#------------------------------------------------------------------------------------------------------
+#author			:	zc.ding
+#date			:	2018-08-15
+#
+#
+#节点说明
+#[global]		:	全局属性配置
+#	mvn_path	:	maven脚本安装路径
+#	config_path	:	config.ini文件路径
+#
+#
+#[template]		:	示例模板
+#[template_switch]	:	实现无等待重启的切换配置节点, 名称必须以_switch结尾, tomcat_port zk_port url一定不能与
+#				template中对应属性一样，否则服务启动
+#
+#------------------------------------------------------------------------------------------------------
+
+[global]
+config_path=/data/www/projects/docker_share/share
+mvn_path=/data/www/tools/apache-maven-3.5.3/bin/mvn
+
+#模板节点
+[template]
+#源java项目路径
+src_path=/data/www/projects/finance
+#源码分支
+branch_name=cxj_develop
+#docker容器运行时，war、jar、tomcat等文件路径
+dst_path=/data/www/projects/docker_share/share/projects
+#源项目的properties文件路径
+env_path=/data/www/projects/env
+#rinetd代理软件本地代理的tomcat端口
+proxy_port=9999
+#宿主主机监听端口，映射docker中8080端口
+tomcat_port=8000
+#rinetd代理软件本地代理的zk端口
+proxy_zk_port=2181
+#宿主主机监听端口，映射docker中zookeeper2181端口
+zk_port=2182
+#用于验证项目启动完成的地址
+url=http://localhost:8000/hk-api-services/index.html
+
+
+[template_switch]
+src_path=/data/www/projects/finance
+dst_path=/data/www/projects/docker_share/share/projects
+env_path=/data/www/projects/env
+proxy_port=8080
+tomcat_port=8082
+proxy_zk_port=2181
+zk_port=2183
+branch_name=cxj_develop
+url=http://localhost:8001/hk-api-services/index.html
+
