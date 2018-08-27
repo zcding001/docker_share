@@ -16,6 +16,8 @@ cd $env_path
 
 sed -i 's/HKJF-TEST-.*/HKJF-TEST-'$branch_name'-/g' common/env_common.properties
 
+echo "遍历所有配置文件." ${env_path}
+
 for filename in ` ls env* `
 do
     SERVICE_NAME=${filename%%.*}
@@ -33,19 +35,26 @@ do
     cp  -a common/env_common.properties  $TARGET_PATH/
 done 
 
-
-
+echo "拷贝management配置文件"
 TARGET_PATH=$src_path"/hk-management-services/src/main/resources/env/"
 rm -rf $TARGET_PATH
 mkdir -p $TARGET_PATH
 cp  -a $env_path/web-conf/management/env_test.properties   $TARGET_PATH
 cp -a common/env_common.properties $src_path/hk-management-services/src/main/resources/
 
+echo "拷贝api配置文件"
 TARGET_PATH=$src_path"/hk-api-services/src/main/resources/env/"
 rm -rf $TARGET_PATH
 mkdir -p $TARGET_PATH
 cp  -a $env_path/web-conf/api/env_test.properties   $TARGET_PATH
 cp -a common/env_common.properties $src_path/hk-api-services/src/main/resources/    
+
+echo "拷贝financial配置文件"
+TARGET_PATH=$src_path"/hk-financial-services/src/main/resources/env/"
+rm -rf $TARGET_PATH
+mkdir -p $TARGET_PATH
+cp  -a $env_path/web-conf/financial/env_test.properties   $TARGET_PATH
+cp -a common/env_common.properties $src_path/hk-financial-services/src/main/resources/    
 
 cd $config_path
 exit

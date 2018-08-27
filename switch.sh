@@ -25,7 +25,6 @@ new_node=$1
 old_node=$1"_switch"
 rinetd_path="/usr/sbin/rinetd"
 
-
 cd ${root_path}
 echo ${log_prefix}"验证节点启动状态，防止并发"
 if [[ -f ${nodes_path}${new_node} && -f ${nodes_path}${old_node} ]]
@@ -54,17 +53,16 @@ proxy_zk_port=`source ./readIni.sh "$new_node" proxy_zk_port`
 
 cd ${root_path}
 echo ${log_prefix}"创建新节点代理配置文件."
-echo -e "0.0.0.0 ${proxy_port} 0.0.0.0 ${tomcat_port} \n 0.0.0.0 ${proxy_zk_port} 0.0.0.0 ${zk_port}" > ${nodes_path}${new_node}
+echo -e "0.0.0.0 ${proxy_port} 0.0.0.0 ${tomcat_port} \n0.0.0.0 ${proxy_zk_port} 0.0.0.0 ${zk_port}" > ${nodes_path}${new_node}
 chmod 777 ${nodes_path}${new_node}
- 
-       
+        
 echo ${log_prefix}"启动节点"${new_node}"对应的docker容器."
 cd share
 sh docker_init.sh ${new_node}
 
 echo ${log_prefix}"容器启动完成, 开始监控服务运行状态."
 count=1
-while [ ${count} -le 120 ]
+while [ ${count} -le 80 ]
 do
 	echo ${log_prefix}"尝试第"${count}"次连接"${url}
 	http_code=$(curl -I -m 10 --connect-timeout 1 -o /dev/null -s -w %{http_code} $url)
@@ -89,12 +87,12 @@ then
 		sudo kill -9 $rinted_pid
 	fi
 	echo ${log_prefix}"启动新的代理."
-	sudo ${rinetd_path} -c ${nodes_path}${new_node}
+	nohup ${rinetd_path} -c ${nodes_path}${new_node} > /dev/null 2>&1 &
                 
 	echo ${log_prefix}"删除旧的节点标识-"${old_node}
         rm -rf ${nodes_path}${old_node}
         echo ${log_prefix}"删除旧的容器-"${old_node}
-        sh del_container.sh ${old_node}        
+        sh del_container.sh ${old_node}       
 else    
         echo ${log_prefix}"服务启动失败."
         echo ${log_prefix}"删除启动失败的容器、node节点对应的文件."
@@ -103,9 +101,10 @@ else
         rm -rf ${nodes_path}${new_node}
 	state=-1
 fi
+
 end_time=`date +%s`
 dif_time=$[ end_time - start_time ]
-echo ${log_prefix}"耗时(秒):"$dif_time
-exit ${state}
+echo ${log_prefix}"耗时["$dif_time "]秒, 运行节点["${new_node}"], 执行状态["${state}"](非0标识启动失败!)"
 
+exit
 

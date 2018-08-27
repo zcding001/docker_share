@@ -47,6 +47,7 @@ rm -rf "$DST_DIR"tomcat/webapps/*.war
 
 # war包
 cp -rf "$SRC_DIR"hk-management-services/target/hk-management-services.war "$DST_DIR"tomcat/webapps/
-cp -rf "$SRC_DIR"hk-api-services/target/hk-api-services.war "$DST_DIR"tomcat/webapps/
+#cp -rf "$SRC_DIR"hk-api-services/target/hk-api-services.war "$DST_DIR"tomcat/webapps/
+cp -rf "$SRC_DIR"hk-financial-services/target/hk-financial-services.war "$DST_DIR"tomcat/webapps/
 
 cd $config_path

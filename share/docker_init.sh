@@ -50,4 +50,3 @@ docker rm $container_name
 echo "run container "$container_name
 docker run -d -p $tomcat_port:8080 -p $zk_port:2181 -it -P -v $config_path:/share --name="$container_name" share:v1 /sbin/my_init --enable-insecure-key -- bash /share/start_projects.sh $container_name
 
-

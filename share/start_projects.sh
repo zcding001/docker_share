@@ -21,15 +21,16 @@ mkdir -p /data/www
 cp -rf /share/baofu_cert /data/www/
 
 #restart services
+echo "启动user, invest, loan, payment, secondary服务"
 cd /share
 bash service_switch.sh user start 5100 $1
 bash service_switch.sh invest start 5101 $1
 bash service_switch.sh loan start 5102 $1
-bash service_switch.sh payment start 5102 $1
+bash service_switch.sh payment start 5103 $1
 bash service_switch.sh secondary start 5104 $1
+echo "启动web服务"
 cd /share/projects/$1/tomcat/webapps
-rm -rf hk-management-services
-rm -rf hk-api-services
+rm -rf hk-*-services
 bash /share/projects/$1/tomcat/bin/shutdown.sh
 bash /share/projects/$1/tomcat/bin/startup.sh
 
