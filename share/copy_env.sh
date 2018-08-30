@@ -15,6 +15,7 @@ branch_name=`source ./readIni.sh "$1" branch_name`
 cd $env_path
 
 sed -i 's/HKJF-TEST-.*/HKJF-TEST-'$branch_name'-/g' common/env_common.properties
+sed -i 's/CXJ-TEST-.*/CXJ-TEST-'$branch_name'-/g' common/env_common.properties
 
 echo "遍历所有配置文件." ${env_path}
 
@@ -42,19 +43,26 @@ mkdir -p $TARGET_PATH
 cp  -a $env_path/web-conf/management/env_test.properties   $TARGET_PATH
 cp -a common/env_common.properties $src_path/hk-management-services/src/main/resources/
 
-echo "拷贝api配置文件"
-TARGET_PATH=$src_path"/hk-api-services/src/main/resources/env/"
-rm -rf $TARGET_PATH
-mkdir -p $TARGET_PATH
-cp  -a $env_path/web-conf/api/env_test.properties   $TARGET_PATH
-cp -a common/env_common.properties $src_path/hk-api-services/src/main/resources/    
 
-echo "拷贝financial配置文件"
-TARGET_PATH=$src_path"/hk-financial-services/src/main/resources/env/"
-rm -rf $TARGET_PATH
-mkdir -p $TARGET_PATH
-cp  -a $env_path/web-conf/financial/env_test.properties   $TARGET_PATH
-cp -a common/env_common.properties $src_path/hk-financial-services/src/main/resources/    
+if [[ $1 == *cxj* ]]
+then
 
+	echo "拷贝api配置文件"
+	TARGET_PATH=$src_path"/hk-api-services/src/main/resources/env/"
+	rm -rf $TARGET_PATH
+	mkdir -p $TARGET_PATH
+	cp  -a $env_path/web-conf/api/env_test.properties   $TARGET_PATH
+	cp -a common/env_common.properties $src_path/hk-api-services/src/main/resources/    
+fi
+
+if [[ $1 == *hk* ]]
+then
+	echo "拷贝financial配置文件"
+	TARGET_PATH=$src_path"/hk-financial-services/src/main/resources/env/"
+	rm -rf $TARGET_PATH
+	mkdir -p $TARGET_PATH
+	cp  -a $env_path/web-conf/financial/env_test.properties   $TARGET_PATH
+	cp -a common/env_common.properties $src_path/hk-financial-services/src/main/resources/    
+fi
 cd $config_path
 exit
