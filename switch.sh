@@ -62,9 +62,10 @@ sh docker_init.sh ${new_node}
 
 echo ${log_prefix}"容器启动完成, 开始监控服务运行状态."
 count=1
+echo ${log_prefix}"尝试[80]次的[Tomcat Server]启动状态监控, 约[350]秒"
 while [ ${count} -le 80 ]
 do
-	echo ${log_prefix}"尝试第"${count}"次连接"${url}
+	echo ${log_prefix}"尝试第["${count}"]次连接"${url}
 	http_code=$(curl -I -m 10 --connect-timeout 1 -o /dev/null -s -w %{http_code} $url)
 	if [ ${http_code} -eq 200 ]
 	then
@@ -78,7 +79,53 @@ echo ${log_prefix}${url}"测试状态码:"${http_code}
 state=0
 if [ ${http_code} -eq 200 ]
 then
-	echo ${log_prefix}"服务启动成功."
+	echo ${log_prefix}"tomcat服务启动成功."
+	echo ${log_prefix}"监控Dubbo服务启动状态."
+	
+	###########################################################################################################
+	#监控Dubbo模块为自定义模块，判断Dubbo启动的service.log文件是否存在，并且提示' Dubbo service server started!'
+	
+	FLAG='Dubbo service server started'
+	declare -A map=(["user"]="0" ["loan"]="0" ["payment"]="0" ["invest"]="0" ["secondary"]="0")
+	count=1
+	echo ${log_prefix}"尝试[20]次[Dubbo Services]服务监控, 约[90]秒."
+	while [ ${count} -le 20 ]
+	do
+        	echo ${log_prefix}"第[${count}]次获取${new_node}下Dubbo服务状态"
+        	flag=1
+        	for key in ${!map[@]}
+        	do
+                	#判断服务启动情况
+                	if [ ${map[$key]} = "0" ]
+                	then
+                        	content=`cat ${root_path}/share/projects/${new_node}/finance-${key}-service/services.log`
+                        	if [[ $content =~ ${FLAG} ]]
+                        	then
+                                	echo ${log_prefix}"======[Dubbo Server ${key}]服务启动完成.====="
+                                	map["${key}"]="1"
+                        	else
+                                	flag=0
+                        	fi
+                	fi
+        	done
+        	#判断所有服务是否启动完成
+        	if [ ${flag} -eq 1 ]
+        	then
+               		break
+        	fi
+        	let count++
+        	sleep 3
+	done
+
+	#输出未启动的服务
+	for key in ${!map[@]}
+	do
+        	if [ ${map[$key]} = "0" ]
+        	then
+               		echo ${log_prefix}"!!!!!!!${key}服务启动失败，请进入容器后手动启动!!!!!!!!"        
+        	fi
+	done		
+	##########################################################################################################
         echo ${log_prefix}"查找运行中的rinetd代理节点-"${old_node}
 	rinted_pid=$(ps -ef|grep rinetd|grep -w ${rinetd_path}' -c '${nodes_path}${old_node}|grep -v 'grep'|awk '{print $2}')
  	echo ${log_prefix}${old_node}"节点代理对应的PID-"${rinted_pid}

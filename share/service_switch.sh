@@ -22,6 +22,8 @@ PID=$SERVICE_NAME\.pid
 
 cd $SERVICE_DIR
 
+echo "" > $SERVICE_DIR/services.log
+
 case "$2" in
 
     start)
