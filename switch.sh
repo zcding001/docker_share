@@ -106,5 +106,5 @@ end_time=`date +%s`
 dif_time=$[ end_time - start_time ]
 echo ${log_prefix}"耗时["$dif_time "]秒, 运行节点["${new_node}"], 执行状态["${state}"](非0标识启动失败!)"
 
-exit
+exit ${state}
 
