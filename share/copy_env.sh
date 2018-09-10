@@ -44,8 +44,8 @@ cp  -a $env_path/web-conf/management/env_test.properties   $TARGET_PATH
 cp -a common/env_common.properties $src_path/hk-management-services/src/main/resources/
 
 
-if [[ $1 == *cxj* ]]
-then
+#if [[ $1 == *cxj* ]]
+#then
 
 	echo "拷贝api配置文件"
 	TARGET_PATH=$src_path"/hk-api-services/src/main/resources/env/"
@@ -53,7 +53,7 @@ then
 	mkdir -p $TARGET_PATH
 	cp  -a $env_path/web-conf/api/env_test.properties   $TARGET_PATH
 	cp -a common/env_common.properties $src_path/hk-api-services/src/main/resources/    
-fi
+#fi
 
 if [[ $1 == *hk* ]]
 then
@@ -63,6 +63,13 @@ then
 	mkdir -p $TARGET_PATH
 	cp  -a $env_path/web-conf/financial/env_test.properties   $TARGET_PATH
 	cp -a common/env_common.properties $src_path/hk-financial-services/src/main/resources/    
+
+	echo "拷贝BI配置文件"
+        TARGET_PATH=$src_path"/hk-bi-services/src/main/resources/env/"
+        rm -rf $TARGET_PATH
+        mkdir -p $TARGET_PATH
+        cp  -a $env_path/web-conf/bi/env_test.properties   $TARGET_PATH
+        cp -a common/env_common.properties $src_path/hk-bi-services/src/main/resources/
 fi
 cd $config_path
 exit

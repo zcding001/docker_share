@@ -49,6 +49,7 @@ tomcat_port=`source ./readIni.sh "$new_node" tomcat_port`
 proxy_port=`source ./readIni.sh "$new_node" proxy_port`
 zk_port=`source ./readIni.sh "$new_node" zk_port`
 proxy_zk_port=`source ./readIni.sh "$new_node" proxy_zk_port`
+ln_log_dst_path=`source ./readIni.sh "global" ln_log_dst_path`
 
 
 cd ${root_path}
@@ -122,11 +123,29 @@ then
 	do
         	if [ ${map[$key]} = "0" ]
         	then
-               		echo ${log_prefix}"!!!!!!!${key}服务启动失败，请进入容器后手动启动!!!!!!!!"        
+               		echo ${log_prefix}"<<<<<<<<!!!!!!![${key}]服务启动失败，请进入容器后手动启动!!!!!!!!>>>>>>>>>>>"        
         	fi
 	done		
 	##########################################################################################################
-        echo ${log_prefix}"查找运行中的rinetd代理节点-"${old_node}
+	
+	#日志路径太深可挂在到global中配置的路径位置	
+	if [ ! -n ${ln_log_dst_path} ]
+	then
+		echo ${log_prefix}"未指定日志软连接路径."
+	else
+		if [ -d ${ln_log_dst_path}/${new_node} ]
+		then
+     			echo ${log_prefix}"软连接已经存在，无需重复创建."
+		else
+			echo ${log_prefix}"将[${new_node}]日志软连接到[${ln_log_dst_path}]."
+			ln -s ${root_path}/share/projects/${new_node} ${ln_log_dst_path}
+		fi	
+	fi
+
+	#钉钉通知相关人员
+	#curl 'https://oapi.dingtalk.com/robot/send?access_token=f23df4616d90014c85ae845ff75b1e7193647d8ca6ffca3f6900c8639967f928' -H 'Content-Type: application/json' -d '{"msgtype": "text", "text": {"content": "通知:项目部署中, 5秒之内切勿触发耗时请求!  @牟泓霏 @李小菱 @孙明宇"}}'
+        #切换rinetd代理
+	echo ${log_prefix}"查找运行中的rinetd代理节点-"${old_node}
 	rinted_pid=$(ps -ef|grep rinetd|grep -w ${rinetd_path}' -c '${nodes_path}${old_node}|grep -v 'grep'|awk '{print $2}')
  	echo ${log_prefix}${old_node}"节点代理对应的PID-"${rinted_pid}
 	if [ ${rinted_pid} ];then
@@ -135,7 +154,10 @@ then
 	fi
 	echo ${log_prefix}"启动新的代理."
 	nohup ${rinetd_path} -c ${nodes_path}${new_node} > /dev/null 2>&1 &
-                
+
+	#钉钉通知相关人员
+	#curl 'https://oapi.dingtalk.com/robot/send?access_token=f23df4616d90014c85ae845ff75b1e7193647d8ca6ffca3f6900c8639967f928' -H 'Content-Type: application/json' -d '{"msgtype": "text", "text": {"content": "通知:项目部署完成. 请继续操作!  @牟泓霏 @李小菱 @孙明宇"}}'               
+ 
 	echo ${log_prefix}"删除旧的节点标识-"${old_node}
         rm -rf ${nodes_path}${old_node}
         echo ${log_prefix}"删除旧的容器-"${old_node}
