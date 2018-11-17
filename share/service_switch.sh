@@ -20,15 +20,22 @@ SERVICE_NAME=$APP_NAME
 JAR_NAME=$1-1.0-SNAPSHOT\.jar
 PID=$SERVICE_NAME\.pid
 
-cd $SERVICE_DIR
+java_agent_path=${SERVICE_DIR}/agent/skywalking-agent.jar
+java_agent=''
 
+# config java agent
+cd /share
+bash copy_agent.sh $4 $1
+[ -f ${java_agent_path} ] && java_agent='-javaagent:'${java_agent_path}
+
+cd $SERVICE_DIR
 echo "" > $SERVICE_DIR/services.log
 
 case "$2" in
 
     start)
         #nohup $JRE_HOME/bin/java -Xms1024m -Xmx1024m -Xloggc:./logs/`date +%F_%H-%M-%S`-gc.log -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintTenuringDistribution -XX:+PrintGCCause -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=5M -Xdebug -Dsun.zip.disableMemoryMapping=true  -jar $SERVICE_DIR/$JAR_NAME >>$SERVICE_DIR/services.log 2>&1 &
-	nohup $JRE_HOME/bin/java -jar -Xms256m -Xmx256m -Xdebug -Dsun.zip.disableMemoryMapping=true  -Xrunjdwp:transport=dt_socket,address=$3,server=y,suspend=n $SERVICE_DIR/$JAR_NAME >>$SERVICE_DIR/services.log 2>&1 &
+	nohup $JRE_HOME/bin/java ${java_agent} -jar -Xms256m -Xmx256m -Xdebug -Dsun.zip.disableMemoryMapping=true  -Xrunjdwp:transport=dt_socket,address=$3,server=y,suspend=n $SERVICE_DIR/$JAR_NAME >>$SERVICE_DIR/services.log 2>&1 &
         echo $! > $SERVICE_DIR/$PID
         echo "=== start $SERVICE_NAME"
         ;;

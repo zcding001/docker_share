@@ -8,7 +8,9 @@
 #
 #------------------------------------------------------------------------------
 
-TOMCAT_PATH=/share/projects/$1/tomcat
+
+CONTAINER_NAME=$1
+TOMCAT_PATH=/share/projects/${CONTAINER_NAME}/tomcat
 
 #config zk
 tar -zxvf /share/soft/zookeeper-3.4.9.tar.gz -C /opt/
@@ -23,15 +25,20 @@ cp -rf /share/baofu_cert /data/www/
 #restart services
 echo "启动user, invest, loan, payment, secondary服务"
 cd /share
-bash service_switch.sh user start 5100 $1
-bash service_switch.sh invest start 5101 $1
-bash service_switch.sh loan start 5102 $1
-bash service_switch.sh payment start 5103 $1
-bash service_switch.sh secondary start 5104 $1
+bash service_switch.sh user start 5100 ${CONTAINER_NAME}
+bash service_switch.sh invest start 5101 ${CONTAINER_NAME}
+bash service_switch.sh loan start 5102 ${CONTAINER_NAME}
+bash service_switch.sh payment start 5103 ${CONTAINER_NAME}
+bash service_switch.sh secondary start 5104 ${CONTAINER_NAME}
 echo "启动web服务"
-cd /share/projects/$1/tomcat/webapps
+cd /share/projects/F${CONTAINER_NAME}/tomcat/webapps
 rm -rf hk-*-services
-bash /share/projects/$1/tomcat/bin/shutdown.sh
-bash /share/projects/$1/tomcat/bin/startup.sh
+
+#config tomcat java agent
+sed -i 's/Your_ApplicationName/'${CONTAINER_NAME}'/g' /share/projects/${CONTAINER_NAME}/tomcat/agent/config/agent.config
+sed -i 's/CONTAINER_NAME/'${CONTAINER_NAME}'/g' /share/projects/${CONTAINER_NAME}/tomcat/bin/catalina.sh
+
+bash /share/projects/${CONTAINER_NAME}/tomcat/bin/shutdown.sh
+bash /share/projects/${CONTAINER_NAME}/tomcat/bin/startup.sh
 
 tail -f /dev/null

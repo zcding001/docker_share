@@ -45,6 +45,10 @@ cp -rf "$SRC_DIR"finance-secondary/finance-secondary-service/target/lib/*       
 cp -rf $config_path/soft/tomcat $DST_DIR
 rm -rf "$DST_DIR"tomcat/webapps/*.war 
 
+#copy server manager war
+cp -rf ${config_path}/projects/manage "$DST_DIR"tomcat/webapps/ 
+sed -i 's/node=.*/node='$1'/g' "$DST_DIR"tomcat/webapps/manage/WEB-INF/classes/config.properties
+
 # war包
 cp -rf "$SRC_DIR"hk-management-services/target/hk-management-services.war "$DST_DIR"tomcat/webapps/
 
@@ -55,5 +59,6 @@ cp -rf "$SRC_DIR"hk-management-services/target/hk-management-services.war "$DST_
 if [[ $1 == *hk* ]]
 then
 	cp -rf "$SRC_DIR"hk-financial-services/target/hk-financial-services.war "$DST_DIR"tomcat/webapps/
+	cp -rf "$SRC_DIR"hk-bi-services/target/hk-bi-services.war "$DST_DIR"tomcat/webapps/
 fi
 cd $config_path
