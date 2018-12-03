@@ -20,7 +20,11 @@ bash /opt/zookeeper-3.4.9/bin/zkServer.sh restart
 
 #copy pay cert
 mkdir -p /data/www
-cp -rf /share/baofu_cert /data/www/
+cp -rf /share/pay_cert /data/www/
+
+#rm -rf /share/projects/${CONATNER_NAME}/hk-*
+#rm -rf /share/projects/${CONATNER_NAME}/finance-*
+#cp -rf /share/projects/${CONATNER_NAME}/tmp/ /share/projects/${CONATNER_NAME}/
 
 #restart services
 echo "启动user, invest, loan, payment, secondary服务"
@@ -35,8 +39,8 @@ cd /share/projects/F${CONTAINER_NAME}/tomcat/webapps
 rm -rf hk-*-services
 
 #config tomcat java agent
-sed -i 's/Your_ApplicationName/'${CONTAINER_NAME}'/g' /share/projects/${CONTAINER_NAME}/tomcat/agent/config/agent.config
-sed -i 's/CONTAINER_NAME/'${CONTAINER_NAME}'/g' /share/projects/${CONTAINER_NAME}/tomcat/bin/catalina.sh
+#sed -i 's/Your_ApplicationName/'${CONTAINER_NAME}'/g' /share/projects/${CONTAINER_NAME}/tomcat/agent/config/agent.config
+#sed -i 's/CONTAINER_NAME/'${CONTAINER_NAME}'/g' /share/projects/${CONTAINER_NAME}/tomcat/bin/catalina.sh
 
 bash /share/projects/${CONTAINER_NAME}/tomcat/bin/shutdown.sh
 bash /share/projects/${CONTAINER_NAME}/tomcat/bin/startup.sh

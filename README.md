@@ -73,7 +73,7 @@ CONTAINER ID        IMAGE               COMMAND                CREATED          
 	jenkins构建日志中显示[switch]服务启动失败，尝试连接的地址返回值非200,首先查看项目部署位置是否正确，应该在projects/节点名称/tomcat/webapps
 	
 问题二
-	jenkins构建日志中显示[switch]服务启动成功.但是在浏览器中通过proxy_por访问却是无法连接，那么通过如下命令查看端口代理是否正常。
+	jenkins构建日志中显示[switch]服务启动成功.但是在浏览器中通过proxy_port访问却是无法连接，那么通过如下命令查看端口代理是否正常。
 	首先查看当前容器运行的是config.ini中哪个节点，通过ll nodes/* 查看存在文件名称即表示运行的节点。
 	其次执行ps aux|grep rinetd 查看rinetd代理软件是否启动了nodes下指定文件的代理，例如
 	root     126256  0.0  0.0   6316   856 ?        S    14:14   0:00 /usr/sbin/rinetd -c /data/www/projects/docker_share/nodes/hk_master
@@ -85,7 +85,10 @@ CONTAINER ID        IMAGE               COMMAND                CREATED          
 
 
 
-
-
-
+问题四
+	jenkins的console中出现如下信息，最终导致服务为正常启动。
+		[switch]验证节点启动状态，防止并发
+		[switch]节点hk_master,hk_master_switch都在启动中，不得重复操作.
+	首先通过docker ps 先停止其中运行的一个容器，然后删除nodes先容器对应的节点文件，通过jenkins重新构建即可
+	
 

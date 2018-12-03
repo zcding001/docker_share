@@ -2,4 +2,6 @@ soft/*
 share/soft/*
 share/projects/*
 share/baofu_cert
+pay_cert
+*/pay_cert
 !.gitkeep

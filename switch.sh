@@ -166,12 +166,14 @@ then
 	echo ${log_prefix}"删除旧的节点标识-"${old_node}
         rm -rf ${nodes_path}${old_node}
         echo ${log_prefix}"删除旧的容器-"${old_node}
-        sh del_container.sh ${old_node}       
+       # sh del_container.sh ${old_node}
+	docker stop ${old_node}
 else    
         echo ${log_prefix}"服务启动失败."
         echo ${log_prefix}"删除启动失败的容器、node节点对应的文件."
                 
-        sh del_container.sh ${new_node}
+        #sh del_container.sh ${new_node}
+	docker stop ${new_node}
         rm -rf ${nodes_path}${new_node}
 	state=-1
 fi

@@ -14,10 +14,14 @@ if [ ! -n "$1" ] ;then
 	exit -1
 fi
 
+tmp_start_time=`date +%s`
 name=$1
 docker stop ${name}
 echo "stop the container "${name}
 docker rm $1
 echo "rm the container "${name}
+tmp_end_time=`date +%s`
+tmp_dif_time=$[ tmp_end_time - tmp_start_time ]
+echo "删除容器耗时[$tmp_dif_time]秒." 
 exit
 

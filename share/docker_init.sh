@@ -42,11 +42,35 @@ $mvn_path -f $src_path/pom.xml  clean package resources:resources -Dmaven.test.s
 sh $config_path/copy_projects.sh $container_name
 
 #清空旧容器&创建新容器
-echo "stop container "$container_name
-docker stop $container_name
-echo "delete container" $container_name
-docker rm $container_name
+#tmp_start_time=`date +%s`
+#echo "stop container "$container_name
+#docker stop $container_name
+#echo "delete container" $container_name
+#docker rm $container_name
+#tmp_end_time=`date +%s`
+#tmp_dif_time=$[ tmp_end_time - tmp_start_time ]
+#echo ${log_prefix}"删除容器耗时[$tmp_dif_time]秒." 
 
-echo "run container "$container_name
-docker run -d -p $tomcat_port:8080 -p $zk_port:2181 -it -P -v $config_path:/share --name="$container_name" share:v1 /sbin/my_init --enable-insecure-key -- bash /share/start_projects.sh $container_name
+#echo "run container "$container_name
+#docker run -d -p $tomcat_port:8080 -p $zk_port:2181 -it -P -v $config_path:/share --name="$container_name" share:v1 /sbin/my_init --enable-insecure-key -- bash /share/start_projects.sh $container_name
+
+#容器存在且运行中先停止在启动，容器不存在，创建新容器，容器存在未启动，直接启动
+state=`source ./run_container.sh`
+if [[ ${state} == 1 ]]
+then
+        #清空旧容器&创建新容器
+        echo "stop container "$container_name
+        docker stop $container_name
+        echo "start container"
+        docker start $container_name
+        #echo "delete container" $container_name
+        #docker rm $container_name
+elif [[ ${state} == 2 ]]
+then
+        docker start $container_name
+else
+        echo "run container "$container_name
+        docker run -d -p $tomcat_port:8080 -p $zk_port:2181 -it -P -v $config_path:/share --name="$container_name" multi:v1 /sbin/my_init --enable-insecure-key -- bash /share/start_projects.sh $container_name
+fi
+
 

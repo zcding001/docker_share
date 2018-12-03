@@ -14,8 +14,8 @@ SERVICE_DIR=/share/projects/${CONTAINER_NAME}/finance-${SERVER_NAME}-service/
 
 if [[ -d ${SRC_AGENT_PATH} ]]
 then
-	cp -rf ${SRC_AGENT_PATH} ${SERVICE_DIR}
-	sed -i 's/Your_ApplicationName/'${CONTAINER_NAME}'-'${SERVER_NAME}'/g' ${SERVICE_DIR}/agent/config/agent.config
+	#cp -rf ${SRC_AGENT_PATH} ${SERVICE_DIR}
+	#sed -i 's/Your_ApplicationName/'${CONTAINER_NAME}'-'${SERVER_NAME}'/g' ${SERVICE_DIR}/agent/config/agent.config
 	echo "copy agent sucess."
 fi
 

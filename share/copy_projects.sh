@@ -46,7 +46,7 @@ cp -rf $config_path/soft/tomcat $DST_DIR
 rm -rf "$DST_DIR"tomcat/webapps/*.war 
 
 #copy server manager war
-cp -rf ${config_path}/projects/manage "$DST_DIR"tomcat/webapps/ 
+cp -rf ${config_path}/soft/manage "$DST_DIR"tomcat/webapps/ 
 sed -i 's/node=.*/node='$1'/g' "$DST_DIR"tomcat/webapps/manage/WEB-INF/classes/config.properties
 
 # war包
